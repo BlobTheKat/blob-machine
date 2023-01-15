@@ -22,7 +22,7 @@ function title(){
 	if(music)music.end()
 	scene = 1
 	splash = splashes[Math.floor(Math.random() * splashes.length)]
-	music = Math.random() < (!!+localStorage.proglet ? .9 : .1) ? proglet() : titleMusicStart().then(titleMusicLoop, true, 0)
+	music = Math.random() < (!!+localStorage.proglet ? .9 : .1) ? proglet(true) : titleMusicStart().then(titleMusicLoop, true, 0)
 	music.to(vNode)
 	if(err){
 		titleNodes.push(new class extends Node{
@@ -69,6 +69,7 @@ proglet
 proglet
 The earth is NOT flat
 i forgor :skull:
+i havent asked
 `.trim().split('\n')
 
 const titleNodes = [
@@ -192,7 +193,7 @@ export function render(dt){
 		this.font = '40px Mono, Consolas, Menlo, monospace'
 		this.globalAlpha = 0.4
 		this.fillText(mods+' core mods loaded', this.width / 2, this.height / 2 + 90 * px, this.width)
-		this.fillText('BlobKat Mod v0.1', this.width / 2, this.height / 2 + 120 * px, this.width)
+		this.fillText('Blob machine v1.0', this.width / 2, this.height / 2 + 120 * px, this.width)
 		this.font = '30px Mono, Consolas, Menlo, monospace'
 		this.fillText('© 2023 blob.kat@hotmail.com', this.width / 2, this.height - 50 * px, this.width)
 		if(VIEW.buttons.has(0))title()
