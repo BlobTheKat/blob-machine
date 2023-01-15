@@ -1,0 +1,345 @@
+</dev/null #><!-- Shell script for starting local http server
+npx live-server --port=80
+exit#-->
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+		<title>&#8203;</title>
+		<style>
+			body{margin:0;background:#000}
+			canvas{
+				position: fixed;
+				transform-origin: bottom left;
+				bottom: 0; left: 0;
+			}
+			#layer{
+				font-size: 50px; /*No px yet*/
+				position: fixed;
+				top: 0; left: 0;
+				color: white; white-space: pre-wrap;
+				padding: 2px; z-index: 10; transform-origin: 0 0;
+				font-family: 'Monocraft', Menlo, Consolas, monospace;
+			}
+		</style>
+		<link rel="icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAAXNSR0IArs4c6QAAAAtJREFUGFdjYAACAAAFAAGq1chRAAAAAElFTkSuQmCC" id="icon">
+	</head>
+	<div id="layer"></div>
+	<script>
+		class BitField extends Array{
+			set(int){
+				while((int >> 5) >= this.length)this.push(0)
+				this[int >> 5] |= 1 << (int & 31)
+			}
+			unset(int){
+				let i = this.length
+				if((int >> 5) >= i)return
+				this[int >> 5] &= ~(1 << (int & 31))
+				while(i && !this[--i])this.pop()
+			}
+			toggle(int){
+				let i = this.length
+				while((int >> 5) >= i)this.push(0)
+				this[int >> 5] ^= 1 << (int & 31)
+				while(i && !this[--i])this.pop()
+			}
+			has(int){
+				if((int >> 5) >= this.length)return false
+				return !!(this[int >> 5] & (1 << (int & 31)))
+			}
+		}
+		const {sqrt, cbrt, sin, cos, abs, min, max, PI, E, atan2, floor, ceil, round, log10, sign, random} = Math
+		const PI2 = PI * 2
+		let D = 1 / devicePixelRatio
+		document.width = document.height = 0; document.mx = innerWidth * devicePixelRatio / 2; document.my = innerHeight * devicePixelRatio / 2
+		function getM(mat){
+			return `matrix(${D * mat.a},${D * mat.b},${D * mat.c},${D * mat.d},${D * mat.e},${D * mat.f/* - visualViewport.height * visualViewport.scale*/})`
+		}
+		onresize = () => {
+			VIEW.width = round(visualViewport.width * visualViewport.scale * devicePixelRatio)
+			VIEW.height = round(visualViewport.height * visualViewport.scale * devicePixelRatio)
+			layer.style.width = VIEW.width + 'px'
+			layer.style.height = VIEW.height + 'px'
+			layer.style.transform = `scale(${1 / devicePixelRatio})`
+			D = 1 / devicePixelRatio
+			for(const c of VIEW.canvases)c.canvas.style.transform = getM(c.matrix)
+		}
+		const {prototype} = class extends CanvasRenderingContext2D{
+			transformBox(a, b, c, d, e, f){
+				this.matrix.a = a; this.matrix.b = b; this.matrix.c = c; this.matrix.d = d; this.matrix.e = e; this.matrix.f = f
+				this.canvas.style.transform = getM(this.matrix);
+				[this.mx, this.my] = getLocalCoords(this, VIEW.mx, VIEW.my)
+			}
+			resize(w, h, a = true){
+				this.canvas.width = w
+				this.canvas.height = h
+				this.imageSmoothingEnabled = a
+			}
+			camTransform(x = 0, y = 0, zoom = 1, rot = 0, _px = px){
+				const w2 = this.canvas.width / 2, h2 = this.canvas.height / 2
+				let cosr = cos(rot), sinr = sin(rot)
+				this.xs = (w2 * abs(cosr) + h2 * abs(sinr)) * zoom / _px
+				this.ys = (w2 * abs(sinr) + h2 * abs(cosr)) * zoom / _px
+				cosr = _px * cosr / zoom; sinr = _px * sinr / zoom
+				this.setTransform(cosr, sinr, -sinr, cosr, this.canvas.width / 2 - cosr * x - sinr * y, this.canvas.height / 2 - sinr * x - cosr * y)
+			}
+			get width(){return this.canvas.width}
+			get height(){return this.canvas.height}
+		}
+		Object.defineProperty(prototype, Symbol.toStringTag, {value: 'Canvas', enumerable: false})
+		const VIEW = document
+		VIEW.canvases = new Set()
+		VIEW.audio = new AudioContext()
+		AudioNode.prototype.to = function(a){
+			a = a.destination || a
+			let n = this
+			while(n){
+				n.disconnect()
+				n.connect(a)
+				n = n.last
+			}
+			return a
+		}
+		AudioNode.prototype.end = function(){
+			let n = this
+			while(n){
+				n.stop(0)
+				n.disconnect()
+				n = n.last
+			}
+		}
+		const _can = document.createElement('canvas').getContext('2d')
+		Image.prototype.resize = function(sx, sy, sw, sh, tw, th, q = VIEW.queue){
+			_can.canvas.width = tw
+			_can.canvas.height = th
+			_can.drawImage(this, sx, sy, sw, sh, 0, 0, tw, th)
+			const img = new Image()
+			img.onload = q.add()
+			_can.canvas.toBlob(blob => img.src = URL.createObjectURL(blob))
+			return img
+		}
+		AudioBufferSourceNode.prototype.then = function(sound, l, d, s, e){
+			if(this.willEndAt == Infinity){console.warn('Called .then() on a looping AudioBufferSourceNode, which can never end.'); return this}
+			let sn = sound(l, d + this.willEndAt - VIEW.audio.currentTime, s, e)
+			sn.last = this
+			return sn
+		}
+		Object.defineProperty(GainNode.prototype, 'volume', {get(){return this.gain.value},set(a){this.gain.value=a},enumerable:false})
+		Object.defineProperties(Document.prototype, {
+			background: {get(){return this.body.style.background},set(a){this.body.style.background = a}},
+			canvas: {value(){
+				let c = this.createElement('canvas').getContext('2d')
+				Object.setPrototypeOf(c, prototype)
+				c.fps = -1
+				c.lastRender = 0
+				c.render = Function.prototype
+				c.canvas.width = VIEW.width; c.canvas.height = VIEW.height
+				c.mx = VIEW.mx; c.my = VIEW.my; c.xs = c.ys = 0
+				c.canvas.style.transform = getM(c.matrix = new DOMMatrix([1, 0, 0, 1, 0, 0]))
+				this.body.append(c.canvas)
+				this.canvases.add(c)
+				return c
+			}},
+			add: {value(c){
+				if(c.canvas.ownerDocument)c.canvas.ownerDocument.canvases.delete(c)
+				this.body.append(c.canvas)
+				this.canvases.add(c)
+			}},
+			remove: {value(c){
+				c.canvas.remove()
+				this.canvases.delete(c)
+			}},
+			icon: {get(){return this.head.children.icon.href}, set(a){this.head.children.icon.href = a}},
+			pointerlock(){
+
+			},
+			pointer: {get(){return this.body.style.cursor}, set(s){this.body.style.cursor = s}},
+			onlock: {value: Function.prototype},
+			onunlock: {value: Function.prototype},
+			loadVideo: {value(src, q = this.queue){
+				let v = this.createElement('video')
+				v.src = src
+				const cb = q.add()
+				v.oncanplaythrough = e => (cb(e), v.oncanplaythrough = null)
+				v.addEventListener('error', cb)
+				v.load()
+				return v
+			}},
+			loadImage: {value(src, q = this.queue){
+				let i = new Image()
+				const cb = q.add()
+				i.addEventListener('load', cb)
+				i.addEventListener('error', cb)
+				i.src = src
+				return i
+			}},
+			loadAudio: {value(src, q = this.queue){
+				const cb = q.add()
+				let buffer
+				const source = VIEW.audio.createBufferSource()
+				fetch(src).then(a => a.arrayBuffer()).then(a => VIEW.audio.decodeAudioData(a, buf => (buffer = buf, cb()))).catch(cb)
+				return (loop = false, delay = 0, start = 0, end = NaN) => {
+					const source = VIEW.audio.createBufferSource()
+					source.buffer = buffer
+					source.connect(VIEW.audio.destination)
+					source.loop = loop
+					const t = VIEW.audio.currentTime
+					if(loop){
+						source.loopStart = start
+						if(end == end)source.loopEnd = end
+						source.start(t + delay, start)
+					}else{
+						source.start(t + delay, start)
+						if(end == end)source.stop(t + delay + end - start)
+					}
+					source.willEndAt = loop ? Infinity : t + (end == end ? end : source.buffer.duration) - start
+					return source
+				}
+			}},
+			async:{value(){
+				return this.queue.async()
+			}},
+			loadFont: {value(name, a, q = this.queue){
+				const f = new FontFace(name, 'url("'+encodeURI(a)+'")')
+				q.promise(f.loaded)
+				document.fonts.add(f)
+				f.load()
+				return f
+			}}
+		})
+		class Queue{
+			cbs = []
+			ecbs = []
+			left = 0
+			done = 0
+			error = 0
+			_cb = e => {if(e && (e.type == 'error' || e instanceof Error)){for(const cb of this.ecbs)cb();this.ecbs.length = 0;this.error++;return};this.done++;if(!--this.left){for(const cb of this.cbs)cb();this.cbs.length=0}}
+			add(){
+				this.left++
+				return this._cb
+			}
+			promise(pr){
+				this.left++
+				pr.then(this._cb, this._cb)
+			}
+			async(){if(!this.left)return Promise.resolve(); return new Promise((r,c)=>{this.cbs.push(r);this.ecbs.push(c)})}
+			callback(cb, ecb = Function.prototype){
+				if(!this.left)return cb()
+				this.cbs.push(cb)
+				if(ecb)thie.ecbs.push(ecb)
+			}
+		}
+		VIEW.queue = new Queue()
+		VIEW.running = true
+		VIEW.buttons = new BitField()
+		VIEW.mxa = VIEW.mya = VIEW.wxa = VIEW.wya = 0
+		const LBUTTON = 0, RBUTTON = 2, MBUTTON = 1
+		VIEW.body.addEventListener('mousedown', e => (VIEW.buttons.set(e.button), e.preventDefault()))
+		VIEW.body.addEventListener('mouseup', e => (VIEW.buttons.unset(e.button), e.preventDefault()))
+		VIEW.body.addEventListener('keydown', e => (e.repeat || VIEW.buttons.set(e.keyCode), e.preventDefault()))
+		VIEW.body.addEventListener('keyup', e => (e.repeat || VIEW.buttons.unset(e.keyCode), e.preventDefault()))
+		const
+			KEY_A = 65, KEY_B = 66, KEY_C = 67, KEY_D = 68, KEY_E = 69, KEY_F = 70,
+			KEY_G = 71, KEY_H = 72, KEY_I = 73, KEY_J = 74, KEY_K = 75, KEY_L = 76,
+			KEY_M = 77, KEY_N = 78, KEY_O = 79, KEY_P = 80, KEY_Q = 81, KEY_R = 82,
+			KEY_S = 83, KEY_T = 84, KEY_U = 85, KEY_V = 86, KEY_W = 87, KEY_X = 88,
+			KEY_Y = 89, KEY_Z = 90, KEY_0 = 48, KEY_1 = 49, KEY_2 = 50, KEY_3 = 51,
+			KEY_4 = 52, KEY_5 = 53, KEY_6 = 54, KEY_7 = 55, KEY_8 = 56, KEY_9 = 57,
+			KEY_SPACE = 32, KEY_SYMBOL = 192, KEY_TAB = 9, KEY_BACKSPACE = 8, KEY_SHIFT = 16,
+			KEY_CONTROL = 17, KEY_ALT = 18, KEY_ESC = 27, KEY_META = 91, KEY_METARIGHT = 93,
+			KEY_CAPSLOCK = 20
+		VIEW.body.addEventListener('contextmenu', e => e.preventDefault())
+		let _usesOffset = false
+		VIEW.body.addEventListener('mousemove', e => {
+			if(e.offsetX || e.offsetY)_usesOffset = true
+			//Accurate to true device pixel
+			const x = _usesOffset ? e.offsetX : e.pageX - e.target.offsetLeft
+			const y = _usesOffset ? e.offsetY : e.pageY - e.target.offsetTop
+			VIEW.mx = x; VIEW.my = y
+			VIEW.mxa += e.movementX * px
+			VIEW.mya += e.movemenyY * px
+		})
+		VIEW.body.addEventListener('wheel', e => {
+			VIEW.wxa += e.deltaX * px
+			VIEW.wya += e.deltaY * px
+			e.preventDefault()
+		}, {passive: false})
+		VIEW.addEventListener('pointerlockchange', console.log)
+		let px = round(devicePixelRatio)
+		let last = 0
+		onfocus = () => last = Date.now()
+		document.currentScript.remove()
+		onresize()
+		onfocus()
+	</script>
+	<script type="module">
+		import * as debug from './index.js'
+		function getLocalCoords({matrix: {a, b, c, d, e, f}}, mx, my){
+			//inverse + translatePoint
+			const u = a * d - b * c
+			const x = (mx * d - my * c + c * f - d * e) / u
+			const y = (my * a - mx * b - a * f - b * e) / u
+			return [x, y]
+		}
+		function updateControls(can){
+			[can.mx, can.my] = getLocalCoords(can, VIEW.mx, VIEW.my)
+		}
+		globalThis.T = 0
+		function frame(){
+			const now = Date.now()
+			T = performance.now() / 1000
+			px = round(devicePixelRatio)
+			for(const c of VIEW.canvases){
+				if(!VIEW.running)continue
+				if(c.fps < 0 || !c.lastRender){
+					c.lastRender = now
+					try{
+						updateControls(c)
+						c.render(min(0.1, (now - last)/1000))
+					}catch(e){
+						if(!c.exception)console.error('Error occurred while rendering canvas:\n%o', c.exception = e)
+					}
+					continue
+				}
+				const age = now - c.lastRender, ms = 1000 / c.fps
+				if(age < ms)continue
+				const dt = age - (age % ms)
+				try{
+					updateControls(c)
+					c.render(min(ms/200, dt/1000))
+				}catch(e){
+					if(!c.exception)console.error('Error occurred while rendering canvas:\n%o', c.exception = e)
+				}
+				c.lastRender += dt
+			}
+			last = now
+			let content = debug.default ? [debug.default] : []
+			for(const k in debug)if(k != 'default')content.push(k + ': ' + info(debug[k]))
+			layer.textContent = content.join('\n')
+			requestAnimationFrame(frame)
+		}
+	 	globalThis.info = function info(v){
+			switch(typeof v){
+				case "boolean": return v ? ' true' : 'false'
+				case "undefined": return ''
+				case "bigint": v = Number(v)
+				case "number": //Also for bigint
+				if(v === Infinity)return ' infinity'
+				if(v === -Infinity)return '-infinity'
+				if(v === NaN)return '    (NaN)'
+				let exp = floor(log10(abs(v)))
+				if(exp >= 9-(v<0))return (v/10**exp).toFixed(5 - (v<0) - (exp>=100) - (exp >= 10)) + 'e' + exp
+				else if(exp < -7 + (v<0))return (v/10**exp).toFixed(4 - (v<0) - (exp<=-100) - (exp <= -10)) + 'e' + exp
+				else return exp<0 ? v.toFixed(7 - (v<0)) : v.toPrecision(8 - (v<0))
+				case "string": return JSON.stringify(v)
+				case "object":
+					if(!v)return 'null'
+					let tag = v[Symbol.toStringTag] || 'Obj'
+					return `<${tag}>`
+				default: return '<unknown>'
+			}
+		}
+		frame()
+	</script>
+</html>
