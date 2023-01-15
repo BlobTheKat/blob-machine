@@ -128,8 +128,8 @@ export function render(dt){
 	if(shiftDown ^ (shiftDown = VIEW.buttons.has(KEY_SHIFT) ^ VIEW.buttons.has(KEY_CAPSLOCK)))[PEN, PEN2] = [PEN2, PEN]
 	if((this.height - this.my) / px < 112){
 		paletteScroll = max(0, min(paletteScroll - (lwy - (lwy = VIEW.wya)), 164 + Cells.length * 100 - this.width / px))
-	}else cam.z *= 0.999 ** (lwy - (lwy = VIEW.wya))
-	if(cam.z < 0.004)cam.z = 0.004
+	}else cam.z *= 1.001 ** (lwy - (lwy = VIEW.wya))
+	if(cam.z < 0.005)cam.z = 0.005
 	if(cam.z > 2)cam.z = 2
 	lmx = this.mx; lmy = this.my
 	if(!spaceBarDown & (spaceBarDown = VIEW.buttons.has(KEY_SPACE)))play(1)
