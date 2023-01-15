@@ -101,9 +101,7 @@ cell({
 //Trap enemy
 cell({
 	push(dir){
-		this.make(FORWARD, this)
-		this.make(LEFT, this)
-		this.make(RIGHT, this)
+		this.summon(dir, this)
 		return Infinity
 	},
 	tx: 2, ty: 1
