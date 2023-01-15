@@ -70,6 +70,11 @@ proglet
 The earth is NOT flat
 i forgor :skull:
 i havent asked
+Also try Pyll Machine!
+Contains magnesium!
+Impossibru
+Objection!
+blob cell wen ¯\\_(ツ)_/¯
 `.trim().split('\n')
 
 const titleNodes = [
