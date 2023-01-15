@@ -97,3 +97,14 @@ cell({
 	},
 	tx: 0, ty: 3
 })
+
+//Trap enemy
+cell({
+	push(dir){
+		this.make(FORWARD, this)
+		this.make(LEFT, this)
+		this.make(RIGHT, this)
+		return Infinity
+	},
+	tx: 2, ty: 1
+})

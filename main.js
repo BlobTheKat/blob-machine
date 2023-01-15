@@ -178,6 +178,7 @@ export function render(dt){
 	this.drawImage(uiset, 21, 0, 7, 7, 150, -150, 36, 36)
 	this.globalAlpha = MSPT <= 4 ? .5 : 1
 	this.drawImage(uiset, 28, 0, 7, 7, 206, -150, 36, 36)
+	this.globalAlpha = 1
 	this.drawImage(uiset, 35, 0, 7, 7, 262, -150, 36, 36)
 	this.globalAlpha = copyFade
 	if(copyFade >= 0.99)copyFade = 1
