@@ -85,3 +85,15 @@ cell({
 	},
 	tx: 3, ty: 2
 })
+
+const breadColors = ['#cb8', '#ca7', '#c96']
+cell({
+	push(dir, f){
+		if(f < 2)return -Infinity
+		this.explode(breadColors)
+		sound(BREAK)
+		this.pop()
+		return Infinity
+	},
+	tx: 0, ty: 3
+})

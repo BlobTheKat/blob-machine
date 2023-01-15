@@ -73,7 +73,7 @@ export class Cell{
 				c.tick(), c = ch2[k2] // PRETICK
 		}
 		if(c){
-			const f = Cells[c.d >> 8].push.call(c, dir)
+			const f = Cells[c.d >> 8].push.call(c, dir, force)
 			if(f == Infinity)return this.pop(), this.x = x, this.y = y, true
 			else if(!(c.move(dir, force + f)))return false
 		}
@@ -118,7 +118,7 @@ export class Cell{
 				c.tick(), c = ch2[k2] // PRETICK
 		}
 		if(c){
-			const f = Cells[c.d >> 8].push.call(c, dir)
+			const f = Cells[c.d >> 8].push.call(c, dir, force)
 			if(f == Infinity)return null
 			else if(!(c.move(dir, force + f)))return null
 		}
