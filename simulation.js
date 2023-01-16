@@ -1,6 +1,7 @@
 export const Cells = []
 export const FORWARD = 3, UP = 3, RIGHT = 0, LEFT = 2, BACKWARD = 1, DOWN = 1
 export const NONE = 0, NORMAL = 1, DIRECTIONAL = 2
+export const DELETE = Infinity
 
 export const map = new Map()
 let ant_x = 0, ant_y = 0, ant_ch
@@ -245,7 +246,11 @@ export const sound = s => sounds |= s
 export const BEAT = 1, BREAK = 2
 
 export let gameAssets = new Queue()
-export const cellset = VIEW.loadImage('./cellset.png', gameAssets)
+export function texturepack(url, cb = Function.prototype){
+	cellset = VIEW.loadImage(localStorage.textures = url || './cellset.png', gameAssets)
+	gameAssets.callback(() => cb('Textures loaded!'), e => (cb('Error loading textures'), setTimeout(texturepack, 20, '')))
+}
+export let cellset = VIEW.loadImage(localStorage.textures || './cellset.png', gameAssets)
 export const uiset = VIEW.loadImage('./uiset.png', gameAssets)
 export const beatSound = VIEW.loadAudio('./beat.mp3', gameAssets)
 export const breakSound = VIEW.loadAudio('./break.mp3', gameAssets)

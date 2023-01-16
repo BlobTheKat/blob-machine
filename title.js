@@ -1,5 +1,5 @@
 import { Button, Node, renderui } from "./components.js"
-import { Cell, map, reset } from "./simulation.js"
+import { Cell, Cells, cellset, DIRECTIONAL, map, NORMAL, noTickGroup, reset, subtickGroups, texturepack } from "./simulation.js"
 
 const titleAssets = new Queue()
 const icon = VIEW.loadImage('./icon.png', titleAssets)
@@ -175,16 +175,30 @@ const titleNodes = [
 			scene = 2
 		}).catch(e => {console.warn(e); err = 'Couldn\'t read clipboard'; title()})
 	}),
-	/*new MenuButton('Online', -70, () => {
+	new MenuButton('Load cell pack', -70, () => {
 		if(err)return
 		navigator.clipboard.readText().then(txt => {
-			console.log(txt)
+			if(!/(\.\/.+(\n|$)|(https?:)?\/\/.+(\n|$))+/yi.test(txt))throw 'Invalid cell packs'
+			localStorage.cellpacks += '\n' + txt
+			location += ''
 		}).catch(e => {err = 'Couldn\'t read clipboard'; title()})
 	}),
-	new MenuButton('Packs', 0),
-	new MenuButton('Options', 70),*/
+	new MenuButton('Load txtr pack', 0, () => {
+		if(err)return
+		navigator.clipboard.readText().then(txt => {
+			txt = txt.trim()
+			if(!txt){
+				err = 'Empty clipboard!'
+				title()
+				return
+			}
+			texturepack(txt, e => { err = e; title() })
+		}).catch(e => {err = 'Couldn\'t read clipboard'; console.warn(e); title()})
+	}),
+	//new MenuButton('Options', 70),
 ]
-
+let ld = false
+const packs = localStorage.cellpacks.split('\n')
 export function render(dt){
 	this.resize(VIEW.width, VIEW.height)
 	VIEW.pointer = ''
@@ -197,11 +211,34 @@ export function render(dt){
 		this.fillText('Click to start', this.width / 2, this.height / 2 + 50 * px, this.width)
 		this.font = '40px Mono, Consolas, Menlo, monospace'
 		this.globalAlpha = 0.4
-		this.fillText(mods+' core mods loaded', this.width / 2, this.height / 2 + 90 * px, this.width)
+		this.fillText(packs.length+' cell packs loaded', this.width / 2, this.height / 2 + 90 * px, this.width)
 		this.fillText('Blob machine v1.0', this.width / 2, this.height / 2 + 120 * px, this.width)
+		this.font = '25px Mono, Consolas, Menlo, monospace'
+		this.fillText('clear all modifications', this.width / 2, this.height - 20 * px, this.width)
 		this.font = '30px Mono, Consolas, Menlo, monospace'
 		this.fillText('© 2023 blob.kat@hotmail.com', this.width / 2, this.height - 50 * px, this.width)
-		if(VIEW.buttons.has(0))title()
+		if(VIEW.buttons.has(0) && !ld){
+			if(this.my > this.height - 30 * px){
+				localStorage.cellpacks = './cells.js'
+				localStorage.textures = ''
+				location += ''
+				return
+			}
+			ld = true
+			Promise.all(packs.map(a => import(a))).then(a => {
+				for(const d of Cells){
+					if(d.update == DIRECTIONAL){
+						d.subtickGroups = [new Set, new Set, new Set, new Set]
+						subtickGroups.push(d.subtickGroups[0], d.subtickGroups[2], d.subtickGroups[3], d.subtickGroups[1])
+					}else if(d.update == NORMAL){
+						const a = new Set
+						d.subtickGroups = [a, a, a, a]
+						subtickGroups.push(a)
+					}else d.subtickGroups = [noTickGroup, noTickGroup, noTickGroup, noTickGroup]
+				}
+				title()
+			})
+		}
 		return
 	}
 	if(scene == 1){
