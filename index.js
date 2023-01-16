@@ -2,7 +2,6 @@ import * as TITLE from './title.js'
 import * as MAIN from './main.js'
 import * as MODDING from './simulation.js'
 globalThis.CELLMODDING = MODDING
-localStorage.cellpacks = localStorage.cellpacks || './cells.js'
 
 globalThis.scene = 0
 

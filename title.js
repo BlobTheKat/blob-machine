@@ -198,6 +198,7 @@ const titleNodes = [
 	//new MenuButton('Options', 70),
 ]
 let ld = false
+localStorage.cellpacks = localStorage.cellpacks || './cells.js'
 const packs = localStorage.cellpacks.split('\n')
 export function render(dt){
 	this.resize(VIEW.width, VIEW.height)
