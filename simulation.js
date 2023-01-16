@@ -19,11 +19,11 @@ export const at = (x, y) => {
 }
 export const particles = new Set
 export class Cell{
-	constructor(kind, d, x, y){
+	constructor(kind, d, x, y, data = 0){
 		this.lx = this.x = x
 		this.ly = this.y = y
 		this.d = (d &= 3) | d << 2 | kind << 8 | 16
-		this.data = 0
+		this.data = data
 		const ch = at(x, y), k = (x & 15) | (y << 4 & 240)
 		const c = ch[k]
 		if(c) Cells[c.d >> 8].subtickGroups[c.d & 3].delete(c)
@@ -101,7 +101,7 @@ export class Cell{
 			*/
 		}
 	}
-	summon(dir, {d}, force = 0){
+	summon(dir, {d, data = 0}, force = 0){
 		if(force < 0)return null
 		dir &= 3
 		let {x, y} = this
@@ -124,7 +124,7 @@ export class Cell{
 			if(f == Infinity)return null
 			else if(f == f && !c.move(dir, force + f))return null
 		}
-		const cell = new Cell(d >> 8, d, x, y)
+		const cell = new Cell(d >> 8, d, x, y, data)
 		cell.lx = this.x
 		cell.ly = this.y
 		cell.d = (cell.d & -29) | (d & 28) | (Cells[d >> 8].subtickGroups[d&3] == G) << 4
