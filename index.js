@@ -1,7 +1,13 @@
 import * as TITLE from './title.js'
 import * as MAIN from './main.js'
-import { Cell, Cells, DIRECTIONAL, NORMAL, noTickGroup, subtickGroups } from './simulation.js'
-await Promise.all(['./cells.js'].map(a => import(a)))
+import { cell, Cells, DIRECTIONAL, NORMAL, noTickGroup, subtickGroups } from './simulation.js'
+for(const m of await Promise.all(['./cells.js'].map(a => import(a)))){
+	if(!m.default)continue
+	for(const k in m.default){
+		m.default[k].name = k
+		cell(m.default[k])
+	}
+}
 for(const d of Cells){
 	if(d.update == DIRECTIONAL){
 		d.subtickGroups = [new Set, new Set, new Set, new Set]

@@ -189,4 +189,6 @@ export function render(dt){
 	this.fillStyle = '#fff5'
 	this.textAlign = 'left'
 	this.fillText('space = play,  tab = step,  backspace = restart,  shift = break.  Tick: '+tickNumber, 38, -11)
+	this.fillStyle = '#fffa'
+	this.fillText(PEN == -1 ? '' : Cells[PEN].name, 390, -120)
 }

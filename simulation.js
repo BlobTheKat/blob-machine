@@ -75,7 +75,7 @@ export class Cell{
 		if(c){
 			const f = Cells[c.d >> 8].push.call(c, dir, force)
 			if(f == Infinity)return this.pop(), this.x = x, this.y = y, true
-			else if(!(c.move(dir, force + f)))return false
+			else if(f == f && !c.move(dir, force + f))return false
 		}
 		ch[k] = null
 		ch2[k2] = this
@@ -120,7 +120,7 @@ export class Cell{
 		if(c){
 			const f = Cells[c.d >> 8].push.call(c, dir, force)
 			if(f == Infinity)return null
-			else if(!(c.move(dir, force + f)))return null
+			else if(f == f && !c.move(dir, force + f))return null
 		}
 		const cell = new Cell(d >> 8, d, x, y)
 		cell.lx = this.x
@@ -140,6 +140,7 @@ export class Cell{
 			new Particle(colSet[i % colSet.length], this.x + .5, this.y + .5)
 		}
 	}
+	is(c){ return this.d >> 8 == c }
 }
 
 class Particle{
@@ -162,9 +163,9 @@ class Particle{
 }
 
 export function cell(def){
-	const c = {tx: 0, ty: 0, update: NONE, tick(){}, push(dir){return 0}}
+	const c = {tx: 0, ty: 0, update: NONE, tick(){}, push(dir, f){return 0}, name: 'Unnamed'}
 	for(const key in c) if(key in def)c[key] = def[key]
-	Cells.push(c)
+	return Cells.push(c) - 1
 }
 
 export const subtickGroups = []
