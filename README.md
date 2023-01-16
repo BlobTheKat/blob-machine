@@ -4,13 +4,13 @@
 
 Loading custom cells works by loading ES6 modules from the link copied to clipboard
 
-To create a cell pack, you must host your .js file to a permanant URL (like a raw github url)
+To create a cell pack, you must host your .js file to a permenant URL (like a raw github url)
 
 Example file contents:
 
 ```js
 
-const { BACKWARD, FORWARD, LEFT, RIGHT, UP, sound, DOWN, BEAT, BREAK, cell, DIRECTIONAL, NORMAL } = CELLMODDING
+const { BACKWARD, FORWARD, LEFT, RIGHT, UP, DOWN, sound, BEAT, BREAK, cell, DIRECTIONAL, NORMAL } = CELLMODDING
 
 
 // Define a cell
@@ -128,3 +128,27 @@ Summon a cell in relative direction
 Returns `null` if failed to move (e.g a wall in the way)
 
 Returns the new cell otherwise
+
+---
+```js
+cell.pop()
+```
+Delete cell
+
+---
+```js
+cell.explode(colors[])
+```
+Make explosion particles (does not delete cell)
+colors is an array of css colors (e.g `['#f00', '#e22', '#c44']`)
+
+
+### Other methods
+
+```js
+sound(sound)
+```
+
+Plays a sound. Supported sounds:
+- `BEAT`
+- `BREAK`
