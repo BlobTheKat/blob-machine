@@ -90,6 +90,7 @@ export class Cell{
 		try{
 			Cells[this.d >> 8].tick.call(this)
 		}catch(e){
+			console.log(e)
 			/* Stack overflow :(
 				Reasons this issue is currently being ignored:
 				- We care about not setting fire to our users' house

@@ -111,22 +111,26 @@ cell({
 })
 const sticky = cell({
 	name: 'Sticky',
-	push(dir){
-		stick(this, dir, false)
-		visited.clear()
-		return NaN
+	push(dir, f){
+		if(v2.has(this))return 0
+		vstack++
+		let a = stick(this, dir, f)
+		if(!--vstack)visited.clear(), v2.clear()
+		return a ? NaN : -Infinity
 	},
 	tx: 1, ty: 3
 })
-let visited = new Set
-function stick(me, dir, behind = false){
-	if(visited.has(me))return
+const visited = new Set, v2 = new Set
+let vstack = 0
+function stick(me, dir, f, l = 3){
+	if(visited.has(me))return false
 	visited.add(me)
-	if(me.is(wall))return
-	if(!me.is(sticky))return void me.move(dir)
-	const a = me.get(dir + 1), b = me.get(dir - 1), c = behind ? me.get(dir + 2) : null
-	if(!me.move(dir))return
-	if(a)stick(a, dir, true)
-	if(b)stick(b, dir, true)
-	if(c)stick(c, dir, true)
+	if(me.is(wall))return false
+	if(!me.is(sticky))return me.move(dir, f)
+	const a = l & 1 ? me.get(dir + 1) : null, b = l & 2 ? me.get(dir - 1) : null, c = l & 4 ? me.get(dir + 2) : null
+	if(!me.move(dir, f))return false
+	if(a)stick(a, dir, f, 5)
+	if(b)stick(b, dir, f, 6)
+	if(c)return v2.add(this), stick(c, dir, f, 7)
+	return true
 }
