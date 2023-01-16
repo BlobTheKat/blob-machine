@@ -42,13 +42,14 @@ const numberKeys = [KEY_0, KEY_1, KEY_2, KEY_3, KEY_4, KEY_5, KEY_6, KEY_7, KEY_
 let paletteScroll = 0, copyFade = 1
 export function render(dt){
 	if(scene != 2 || gameAssets.left)return
-	this.resize(VIEW.width, VIEW.height, false)
-	if(VIEW.buttons.has(RBUTTON)){
+	this.resize(VIEW.width, VIEW.height, !!+localStorage.smooth)
+	if(VIEW.buttons.has(RBUTTON) && !+localStorage.controls){
 		cam.x += (lmx - this.mx) * .25 / cam.z / px
 		cam.y += (lmy - this.my) * .25 / cam.z / px
 	}
+	if(shiftDown ^ (shiftDown = VIEW.buttons.has(KEY_SHIFT) ^ VIEW.buttons.has(KEY_CAPSLOCK) ^ (+localStorage.controls && VIEW.buttons.has(RBUTTON))))[PEN, PEN2] = [PEN2, PEN]
 	const mouseWasDown = mouseDown
-	a: if(mouseDown = VIEW.buttons.has(LBUTTON)){
+	a: if(mouseDown = VIEW.buttons.has(LBUTTON) || (+localStorage.controls && VIEW.buttons.has(RBUTTON))){
 		if((this.height - this.my) / px < 112){
 			const p = floor((this.mx / px - 14 + paletteScroll) / 100) - 1
 			if(p < Cells.length)PEN = p
@@ -128,7 +129,6 @@ export function render(dt){
 	if(!backspaceDown & (backspaceDown = VIEW.buttons.has(KEY_BACKSPACE)))reset()
 	if(!qDown & (qDown = VIEW.buttons.has(KEY_Q)))rot = 1, dir = (dir - 1) & 3
 	if(!eDown & (eDown = VIEW.buttons.has(KEY_E)))rot = -1, dir = (dir + 1) & 3
-	if(shiftDown ^ (shiftDown = VIEW.buttons.has(KEY_SHIFT) ^ VIEW.buttons.has(KEY_CAPSLOCK)))[PEN, PEN2] = [PEN2, PEN]
 	if((this.height - this.my) / px < 112){
 		paletteScroll = max(0, min(paletteScroll - (lwy - (lwy = VIEW.wya)), 164 + Cells.length * 100 - this.width / px))
 	}else cam.z *= 1.001 ** (lwy - (lwy = VIEW.wya))

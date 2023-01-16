@@ -76,40 +76,56 @@ Impossibru
 Objection!
 blob cell wen ¯\\_(ツ)_/¯
 `.trim().split('\n')
+class Checkbox extends Node{
+	fx = 1; fy = 1; x = -10; y = -10
+	key = ''
+	name = ''
+	get activated(){return !!+localStorage[this.key]}
+	set activated(a){localStorage[this.key] = +!!a}
+	clicked = false
+	render(c){
+		const {x, y} = this.frame()
+		c.fillStyle = '#0008'
+		c.strokeStyle = '#fff'
+		c.fillRect(x - 20, y - 20, 20, 20)
+		c.strokeRect(x - 20, y - 20, 20, 20)
+		if(this.activated){
+			c.fillStyle = '#25E'
+			c.fillRect(x - 16, y - 16, 12, 12)
+		}
+		c.font = '15px Mono, Consolas, Menlo, monospace'
+		c.textAlign = 'right'
+		c.fillStyle = '#fff'
+		c.fillText(this.name, x - 25, y - 4)
+		const clicking = c.mx / px < x && c.my / px < y && c.mx / px >= x - 20 && c.my / px >= y - 20 && VIEW.buttons.has(LBUTTON)
+		if(clicking && !this.clicked){
+			this.activated = !this.activated
+			title()
+		}
+		this.clicked = clicking
+	}
+}
 
 const titleNodes = [
-	new class extends Node{
-		fx = 1; fy = 1; x = -10; y = -10
-		get activated(){return !!+localStorage.proglet}
-		set activated(a){localStorage.proglet = +!!a}
-		clicked = false
-		render(c){
-			const {x, y} = this.frame()
-			c.fillStyle = '#0008'
-			c.strokeStyle = '#fff'
-			c.fillRect(x - 20, y - 20, 20, 20)
-			c.strokeRect(x - 20, y - 20, 20, 20)
-			if(this.activated){
-				c.fillStyle = '#25E'
-				c.fillRect(x - 16, y - 16, 12, 12)
-			}
-			c.font = '15px Mono, Consolas, Menlo, monospace'
-			c.textAlign = 'right'
-			c.fillStyle = '#fff'
-			c.fillText('Proglet', x - 25, y - 4)
-			const clicking = c.mx / px < x && c.my / px < y && c.mx / px >= x - 20 && c.my / px >= y - 20 && VIEW.buttons.has(LBUTTON)
-			if(clicking && !this.clicked){
-				this.activated = !this.activated
-				title()
-			}
-			this.clicked = clicking
-		}
+	new class extends Checkbox{
+		key = 'proglet'
+		name = 'Proglet'
+	},
+	new class extends Checkbox{
+		y = -40
+		key = 'controls'
+		name = 'Vanilla controls'
+	},
+	new class extends Checkbox{
+		y = -70
+		key = 'smooth'
+		name = 'Anti-aliasing'
 	},
 	new class extends Node{
 		x = 150; fx = .5
 		y = 80; fy = 0
 		s = 0
-		sub = 'v1.0'
+		sub = 'v1.1'
 		render(c, dt){
 			const {x, y} = this.frame()
 			c.font = '60px Mono, Consolas, Menlo, monospace'
@@ -201,22 +217,22 @@ let ld = false
 localStorage.cellpacks = localStorage.cellpacks || './cells.js'
 const packs = localStorage.cellpacks.split('\n')
 export function render(dt){
-	this.resize(VIEW.width, VIEW.height)
+	this.resize(VIEW.width, VIEW.height, !!+localStorage.smooth)
 	VIEW.pointer = ''
 	if(!scene){
 		this.fillRect(0, 0, this.width, this.height)
-		this.font = '60px Mono, Consolas, Menlo, monospace'
+		this.font = 30 * px + 'px Mono, Consolas, Menlo, monospace'
 		this.textAlign = 'center'
 		this.fillStyle = '#fff'
 		this.drawImage(icon, 0, 0, icon.width, icon.height, this.width / 2 - 150 * px, this.height / 2 - 300 * px, 300 * px, 300 * px)
 		this.fillText('Click to start', this.width / 2, this.height / 2 + 50 * px, this.width)
-		this.font = '40px Mono, Consolas, Menlo, monospace'
+		this.font = 20 * px + 'px Mono, Consolas, Menlo, monospace'
 		this.globalAlpha = 0.4
 		this.fillText(packs.length+' cell packs loaded', this.width / 2, this.height / 2 + 90 * px, this.width)
-		this.fillText('Blob machine v1.0', this.width / 2, this.height / 2 + 120 * px, this.width)
-		this.font = '25px Mono, Consolas, Menlo, monospace'
+		this.fillText('Blob machine v1.1', this.width / 2, this.height / 2 + 120 * px, this.width)
+		this.font = 12 * px + 'px Mono, Consolas, Menlo, monospace'
 		this.fillText('clear all modifications', this.width / 2, this.height - 20 * px, this.width)
-		this.font = '30px Mono, Consolas, Menlo, monospace'
+		this.font = 15 * px + 'px Mono, Consolas, Menlo, monospace'
 		this.fillText('© 2023 blob.kat@hotmail.com', this.width / 2, this.height - 50 * px, this.width)
 		if(VIEW.buttons.has(0) && !ld){
 			if(this.my > this.height - 30 * px){
