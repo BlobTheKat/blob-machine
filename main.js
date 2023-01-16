@@ -102,6 +102,9 @@ export function render(dt){
 					breakSound()
 					Cells[c.d >> 8].subtickGroups[c.d & 3].delete(c)
 				}
+			}else if(c && (c.d & 3) == dir && (c.d >> 8) == PEN){
+				if(mouseWasDown)break a
+				Cells[PEN].clicked.call(c)
 			}else{
 				if(!c || (c.d & 3) != dir || c.d >> 8 != PEN)beatSound()
 				new Cell(PEN, dir, x, y)
@@ -141,6 +144,11 @@ export function render(dt){
 
 	const diff = tick()//(0.0009765625**tick() - 1) * -1.0009775171065494
 	let x0 = floor(cam.x - this.xs >> 8), x1 = floor(cam.x + this.xs >> 8) + 1, y0 = floor(cam.y - this.ys >> 8), y1 = floor(cam.y + this.ys >> 8) + 1
+	this.font = '8px Mono'
+	this.textAlign = 'center'
+	this.textBaseline = 'middle'
+	this.fillStyle = '#fff'
+	this.strokeStyle = '#0008'
 	for(let x = x0; x < x1; x++){
 		for(let y = y0; y < y1; y++){
 			let ch = at(x<<4, y<<4)
@@ -152,6 +160,10 @@ export function render(dt){
 				this.translate((c.x<<4) * diff + (c.lx<<4) * (1 - diff) + 8, (c.y<<4) * diff + (c.ly<<4) * (1-diff) + 8)
 				this.rotate(rot)
 				this.drawImage(cellset, def.tx<<4, def.ty<<4, 16, 16, -8, -8, 16, 16)
+				if(c.data){
+					this.strokeText(c.data, 0, 0, 16)
+					this.fillText(c.data, 0, 0, 16)
+				}
 				this.restore()
 			}
 		}
@@ -185,6 +197,7 @@ export function render(dt){
 	else copyFade += 0.01
 	this.drawImage(uiset, 42, 0, 7, 7, 318, -150, 36, 36)
 	this.globalAlpha = 1
+	this.textBaselign = 'alphabetic'
 	this.font = '20px Mono'
 	this.fillStyle = '#fff5'
 	this.textAlign = 'left'

@@ -92,8 +92,12 @@ cell({
 })
 cell({
 	name: 'Bread',
+	clicked(){
+		if(this.data)this.data++
+		else this.data = 2
+	},
 	push(dir, f){
-		if(f < 2)return -Infinity
+		if(f < (this.data || 3) - 1)return -Infinity
 		this.explode(breadColors)
 		sound(BREAK)
 		this.pop()

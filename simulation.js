@@ -23,6 +23,7 @@ export class Cell{
 		this.lx = this.x = x
 		this.ly = this.y = y
 		this.d = (d &= 3) | d << 2 | kind << 8 | 16
+		this.data = 0
 		const ch = at(x, y), k = (x & 15) | (y << 4 & 240)
 		const c = ch[k]
 		if(c) Cells[c.d >> 8].subtickGroups[c.d & 3].delete(c)
@@ -164,7 +165,7 @@ class Particle{
 }
 
 export function cell(def){
-	const c = {tx: 0, ty: 0, update: NONE, tick(){}, push(dir, f){return 0}, name: 'Unnamed'}
+	const c = {tx: 0, ty: 0, update: NONE, tick(){}, push(dir, f){return 0}, name: 'Unnamed', clicked(){}}
 	for(const key in c) if(key in def)c[key] = def[key]
 	return Cells.push(c) - 1
 }
