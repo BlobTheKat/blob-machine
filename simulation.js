@@ -179,7 +179,7 @@ export const play = p => playState = playState == 0 ? p : 0
 let G
 let originalCells = null
 
-export const faster = () => MSPT = MSPT <= 4 ? 4 : MSPT / 2
+export const faster = () => MSPT = MSPT <= 1 ? 1 : MSPT / 2
 export const slower = () => MSPT = MSPT >= 2048 ? 2048 : MSPT * 2
 
 export function reset(o = originalCells){
