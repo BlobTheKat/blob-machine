@@ -194,6 +194,7 @@ const titleNodes = [
 	new MenuButton('Load cell pack', -70, () => {
 		if(err)return
 		navigator.clipboard.readText().then(txt => {
+			txt = txt.trim()
 			if(!/(\.\/.+(\n|$)|(https?:)?\/\/.+(\n|$))+/yi.test(txt))throw 'Invalid cell packs'
 			localStorage.cellpacks += '\n' + txt
 			location += ''

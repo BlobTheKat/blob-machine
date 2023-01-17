@@ -258,3 +258,7 @@ export function cell(def){
 	for(const key in c) if(key in def) c[key] = def[key]
 	return Cells.push(c) - 1
 }
+
+export function texture(path){
+	return VIEW.load(path, gameAssets)
+}
