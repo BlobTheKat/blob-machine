@@ -164,12 +164,6 @@ class Particle{
 	}
 }
 
-export function cell(def){
-	const c = {tx: 0, ty: 0, update: NONE, tick(){}, push(dir, f){return 0}, name: 'Unnamed', clicked(){}}
-	for(const key in c) if(key in def)c[key] = def[key]
-	return Cells.push(c) - 1
-}
-
 export const subtickGroups = []
 export const noTickGroup = new Set
 export let MSPT = 256
@@ -258,3 +252,9 @@ export let cellset = VIEW.loadImage(localStorage.textures || './cellset.png', ga
 export const uiset = VIEW.loadImage('./uiset.png', gameAssets)
 export const beatSound = VIEW.loadAudio('./beat.mp3', gameAssets)
 export const breakSound = VIEW.loadAudio('./break.mp3', gameAssets)
+
+export function cell(def){
+	const c = {atlas: cellset, tx: 0, ty: 0, update: NONE, tick(){}, push(dir, f){return 0}, name: 'Unnamed', clicked(){}}
+	for(const key in c) if(key in def)c[key] = def[key]
+	return Cells.push(c) - 1
+}

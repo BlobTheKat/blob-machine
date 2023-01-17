@@ -1,5 +1,5 @@
 import { Button, Node, renderui } from "./components.js"
-import { Cell, Cells, cellset, DIRECTIONAL, map, TICK, noTickGroup, reset, subtickGroups, texturepack } from "./simulation.js"
+import { Cell, Cells, DIRECTIONAL, TICK, noTickGroup, reset, subtickGroups, texturepack } from "./simulation.js"
 
 const titleAssets = new Queue()
 const icon = VIEW.loadImage('./icon.png', titleAssets)

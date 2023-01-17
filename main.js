@@ -159,7 +159,7 @@ export function render(dt){
 				this.save()
 				this.translate((c.x<<4) * diff + (c.lx<<4) * (1 - diff) + 8, (c.y<<4) * diff + (c.ly<<4) * (1-diff) + 8)
 				this.rotate(rot)
-				this.drawImage(cellset, def.tx<<4, def.ty<<4, 16, 16, -8, -8, 16, 16)
+				this.drawImage(def.atlas, def.tx<<4, def.ty<<4, 16, 16, -8, -8, 16, 16)
 				if(c.data){
 					this.strokeText(c.data, 0, 0, 16)
 					this.fillText(c.data, 0, 0, 16)

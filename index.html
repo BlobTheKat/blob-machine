@@ -265,6 +265,10 @@ exit#-->
 			VIEW.wya += e.deltaY * px
 			e.preventDefault()
 		}, {passive: false})
+		VIEW.body.addEventListener('mousewheel', e => {
+			e.preventDefault()
+		}, {passive: false})
+		
 		VIEW.addEventListener('pointerlockchange', console.log)
 		let px = round(devicePixelRatio)
 		let last = 0
