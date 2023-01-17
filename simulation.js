@@ -175,7 +175,7 @@ export const noTickGroup = new Set
 export let MSPT = 256
 export let lastRender = Date.now()
 export let subtick = 0, playState = 0
-export const play = p => playState = playState == 0 ? p : 0
+export const play = p => playState = playState == 0 ? (lastRender = Date.now() - MSPT, p) : 0
 let G
 let originalCells = null
 
@@ -200,46 +200,49 @@ export function reset(o = originalCells){
 }
 export let tickNumber = 0
 export function tick(){
-	const diff = (Date.now() - lastRender) / MSPT
+	let diff = min(5000, Date.now() - lastRender) / MSPT
 	if(playState < 2 && diff < 1)return diff
 	if(playState == 0)return min(diff, 1)
-	if(!originalCells){
-		originalCells = []
+	do{
+		if(!originalCells){
+			originalCells = []
+			for(const g of subtickGroups)
+				for(const c of g)
+					originalCells.push(c.d | 28, c.x, c.y)
+			for(const c of noTickGroup)
+				originalCells.push(c.d | 28, c.x, c.y)
+		}
 		for(const g of subtickGroups)
 			for(const c of g)
-				originalCells.push(c.d | 28, c.x, c.y)
+				c.lx = c.x, c.ly = c.y, c.d = (c.d & -29) | (c.d & 3) << 2
 		for(const c of noTickGroup)
-			originalCells.push(c.d | 28, c.x, c.y)
-	}
-	for(const g of subtickGroups)
-		for(const c of g)
 			c.lx = c.x, c.ly = c.y, c.d = (c.d & -29) | (c.d & 3) << 2
-	for(const c of noTickGroup)
-		c.lx = c.x, c.ly = c.y, c.d = (c.d & -29) | (c.d & 3) << 2
-	if(playState == 1 || playState == 2){
-		if(playState == 2)playState = 0
-		while(subtick < subtickGroups.length){
+		if(playState == 1 || playState == 2){
+			if(playState == 2)playState = 0
+			while(subtick < subtickGroups.length){
+				for(const c of G = subtickGroups[subtick++])
+					c.tick()
+			}
+			subtick = 0
+			tickNumber++
+		}else if(playState == 3){
+			playState = 0
 			for(const c of G = subtickGroups[subtick++])
 				c.tick()
+			if(subtick == subtickGroups.length)subtick = 0, tickNumber++
 		}
-		subtick = 0
-		tickNumber++
-	}else if(playState == 3){
-		playState = 0
-		for(const c of G = subtickGroups[subtick++])
-			c.tick()
-		if(subtick == subtickGroups.length)subtick = 0, tickNumber++
-	}
-	if(sounds & BEAT)beatSound()
-	if(sounds & BREAK)breakSound()
-	sounds = 0
-	lastRender = Date.now()
-	if(tickNumber % 10 == 0){
-		L: for(const [k, v] of map){
-			for(let c of v)if(c)continue L
-			map.delete(k)
+		if(sounds & BEAT)beatSound()
+		if(sounds & BREAK)breakSound()
+		sounds = 0
+		lastRender = Date.now()
+		if(tickNumber % 10 == 0){
+			L: for(const [k, v] of map){
+				for(let c of v)if(c)continue L
+				map.delete(k)
+			}
 		}
-	}
+		diff--
+	}while(diff >= 1)
 	return 0
 }
 let sounds = 0
