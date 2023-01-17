@@ -242,7 +242,8 @@ export function render(dt){
 				return
 			}
 			ld = true
-			Promise.all(packs.map(a => import(a))).then(a => {
+			;(async () => {
+				for(const pack of packs)await import(pack)
 				for(const d of Cells){
 					if(d.update == DIRECTIONAL){
 						d.subtickGroups = [new Set, new Set, new Set, new Set]
@@ -254,7 +255,7 @@ export function render(dt){
 					}else d.subtickGroups = [noTickGroup, noTickGroup, noTickGroup, noTickGroup]
 				}
 				title()
-			})
+			})()
 		}
 		return
 	}
