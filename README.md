@@ -10,7 +10,7 @@ Example file contents:
 
 ```js
 
-const { BACKWARD, FORWARD, LEFT, RIGHT, UP, DOWN, sound, BEAT, BREAK, cell, DIRECTIONAL, NORMAL } = CELLMODDING
+const { BACKWARD, FORWARD, LEFT, RIGHT, UP, DOWN, sound, BEAT, BREAK, cell, DIRECTIONAL, TICK } = CELLMODDING
 
 
 // Define a cell
@@ -19,8 +19,8 @@ cell({
 	//Cell name
 	name: 'Attract cell',
 
-	//NORMAL = updates every tick, DIRECTIONAL = updates every tick but in cell direction order like movers and generators
-	update: NORMAL 
+	//TICK = updates every tick, DIRECTIONAL = updates every tick but in cell direction order like movers and generators
+	update: TICK 
 
 	//Location of cell in texture image. (tx: 0, ty: 0) means top left, and each increment after that is 16px right / down
 	//Here (tx: 2, ty: 3) means the texture is at x=32, y=48 (size is always 16x16)

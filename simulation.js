@@ -1,6 +1,6 @@
 export const Cells = []
 export const FORWARD = 3, UP = 3, RIGHT = 0, LEFT = 2, BACKWARD = 1, DOWN = 1
-export const NONE = 0, NORMAL = 1, DIRECTIONAL = 2
+export const NONE = 0, TICK = 1, DIRECTIONAL = 2
 export const DELETE = Infinity
 
 export const map = new Map()

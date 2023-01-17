@@ -1,5 +1,5 @@
 import { Button, Node, renderui } from "./components.js"
-import { Cell, Cells, cellset, DIRECTIONAL, map, NORMAL, noTickGroup, reset, subtickGroups, texturepack } from "./simulation.js"
+import { Cell, Cells, cellset, DIRECTIONAL, map, TICK, noTickGroup, reset, subtickGroups, texturepack } from "./simulation.js"
 
 const titleAssets = new Queue()
 const icon = VIEW.loadImage('./icon.png', titleAssets)
@@ -247,7 +247,7 @@ export function render(dt){
 					if(d.update == DIRECTIONAL){
 						d.subtickGroups = [new Set, new Set, new Set, new Set]
 						subtickGroups.push(d.subtickGroups[0], d.subtickGroups[2], d.subtickGroups[3], d.subtickGroups[1])
-					}else if(d.update == NORMAL){
+					}else if(d.update == TICK){
 						const a = new Set
 						d.subtickGroups = [a, a, a, a]
 						subtickGroups.push(a)

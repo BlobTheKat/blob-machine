@@ -1,4 +1,4 @@
-import { BACKWARD, BEAT, BREAK, cell, DIRECTIONAL, DOWN, FORWARD, LEFT, NORMAL, RIGHT, sound, UP } from './simulation.js'
+import { BACKWARD, BEAT, BREAK, cell, DIRECTIONAL, DOWN, FORWARD, LEFT, TICK, RIGHT, sound, UP } from './simulation.js'
 
 
 const redColors = ['#600', '#700', '#800', '#900', '#a00', '#b00', '#c00', '#d00']
@@ -25,7 +25,7 @@ cell({
 		a = this.get(DOWN)
 		if(a) a.rot(RIGHT)
 	},
-	update: NORMAL,
+	update: TICK,
 	tx: 3, ty: 1
 })
 cell({
@@ -40,7 +40,7 @@ cell({
 		a = this.get(DOWN)
 		if(a) a.rot(LEFT)
 	},
-	update: NORMAL,
+	update: TICK,
 	tx: 0, ty: 2
 })
 cell({
