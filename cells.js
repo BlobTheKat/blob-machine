@@ -82,7 +82,7 @@ cell({
 	},
 	tx: 2, ty: 1
 })
-cell({
+const trash = cell({
 	name: 'Trash',
 	push(dir){
 		sound(BREAK)
@@ -139,3 +139,13 @@ function stick(me, dir, f, l = 3){
 	if(c)return v2.add(this), stick(c, dir, f, 7)
 	return true
 }
+const diamondColors = ['#E52', '#F64', '#F75']
+cell({
+	name: 'Diamond',
+	push(dir, f){
+		let a = this.get(dir)
+		if(a && a.is(trash))return -Infinity
+		return -2
+	},
+	tx: 2, ty: 3
+})
