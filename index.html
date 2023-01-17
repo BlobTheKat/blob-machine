@@ -63,7 +63,7 @@ exit#-->
 			layer.style.height = VIEW.height + 'px'
 			layer.style.transform = `scale(${1 / devicePixelRatio})`
 			D = 1 / devicePixelRatio
-			for(const c of VIEW.canvases)c.canvas.style.transform = getM(c.matrix)
+			for(const c of VIEW.canvases) c.canvas.style.transform = getM(c.matrix)
 		}
 		const {prototype} = class extends CanvasRenderingContext2D{
 			transformBox(a, b, c, d, e, f){
@@ -142,7 +142,7 @@ exit#-->
 				return c
 			}},
 			add: {value(c){
-				if(c.canvas.ownerDocument)c.canvas.ownerDocument.canvases.delete(c)
+				if(c.canvas.ownerDocument) c.canvas.ownerDocument.canvases.delete(c)
 				this.body.append(c.canvas)
 				this.canvases.add(c)
 			}},

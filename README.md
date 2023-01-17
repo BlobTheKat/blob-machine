@@ -20,11 +20,11 @@ cell({
 	name: 'Attract cell',
 
 	//TICK = updates every tick, DIRECTIONAL = updates every tick but in cell direction order like movers and generators
-	update: TICK 
+	update: TICK,
 
 	//Location of cell in texture image. (tx: 0, ty: 0) means top left, and each increment after that is 16px right / down
 	//Here (tx: 2, ty: 3) means the texture is at x=32, y=48 (size is always 16x16)
-	tx: 2, ty: 3
+	tx: 2, ty: 3,
 
 	tick(){
 		//Update the cell
@@ -152,3 +152,7 @@ sound(sound)
 Plays a sound. Supported sounds:
 - `BEAT`
 - `BREAK`
+
+## Texture packs
+
+Like mods, texture pack are a link to a hosted image. Any size will work, but default cells use the arrangement as shown in `./cellset.png`, so the recommended size for a texture pack image is 64x64. All textures are 16x16, regardless of texture pack image size or cell definition

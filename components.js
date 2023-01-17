@@ -46,7 +46,7 @@ export class Button extends Node{
 		}else if(this.down && !VIEW.buttons.has(0)){
 			this.down = false
 		}
-		if(this.down)c.strokeStyle = '#88f'
+		if(this.down) c.strokeStyle = '#88f'
 		c.strokeRect(x, y, w, h)
 		c.fillText(this.text, x + w / 2 + 5, y + h / 2 + 10)
 	}

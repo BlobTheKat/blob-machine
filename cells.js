@@ -119,7 +119,7 @@ const sticky = cell({
 		if(v2.has(this))return 0
 		vstack++
 		let a
-		try{a = stick(this, dir, f)}catch(e){}
+		try{ a = stick(this, dir, f) }catch(e){}
 		if(!--vstack)visited.clear(), v2.clear()
 		return a ? NaN : -Infinity
 	},
