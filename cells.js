@@ -8,7 +8,7 @@ cell({
 	name: 'Generator',
 	tick(){
 		const a = this.look(BACKWARD)
-		if(a)this.make(FORWARD, a), sound(BEAT)
+		if(a && !a.is(voidcell))this.make(FORWARD, a), sound(BEAT)
 	},
 	update: DIRECTIONAL,
 	tx: 1, ty: 1
@@ -74,6 +74,7 @@ const wall = cell({
 })
 cell({
 	name: 'Enemy',
+	clicked(){ this.data++ },
 	push(dir){
 		if(this.data--)return Infinity
 		this.explode(redColors)
@@ -145,7 +146,7 @@ cell({
 	name: 'Diamond',
 	push(dir, f){
 		let a = this.get(dir)
-		if(a && a.is(trash))return -Infinity
+		if(a && (a.is(trash) || a.is(counterTrash)))return -Infinity
 		return -2
 	},
 	tx: 2, ty: 3
@@ -220,4 +221,33 @@ cell({
 		if(!cell || cell.data < 1)return
 		cell.data--
 	}
+})
+
+const voidcell = cell({
+	name: 'Void',
+	stx: 2, sty: 0,
+	push(dir, f){return -Infinity}
+})
+
+const counterTrash = cell({
+	name: 'Counter Trash',
+	push(dir){
+		sound(BREAK)
+		this.data++
+		return Infinity
+	},
+	atlas: extensionAtlas,
+	tx: 2, ty: 1
+})
+
+const trashMover = cell({
+	name: 'Trash Mover',
+	tick(){
+		let a = this.look(FORWARD)
+		if(a && !a.is(voidcell))a.pop(), sound(BREAK)
+		this.go(FORWARD)
+	},
+	atlas: extensionAtlas,
+	update: DIRECTIONAL,
+	tx: 1, ty: 1
 })
