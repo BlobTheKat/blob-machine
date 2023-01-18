@@ -116,7 +116,7 @@ export function render(dt){
 	}
 	cam.x += dx / cam.z * 2
 	cam.y += dy / cam.z * 2
-	dx *= 0.05 ** dt; dy *= 0.05 ** dt
+	dx *= 0.01 ** dt; dy *= 0.01 ** dt
 	if(abs(rot) <= 0.1)rot = 0
 	rot -= sign(rot) * 0.1
 	if(VIEW.buttons.has(KEY_W))dy = -1
