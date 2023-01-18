@@ -134,8 +134,8 @@ export class Cell{
 	pop(){
 		//DELET :(
 		let {x, y} = this
+		if(!Cells[this.d >> 8].subtickGroups[this.d & 3].delete(this))return //Cell already deleted
 		at(x, y)[(x & 15) | (y << 4 & 240)] = null
-		Cells[this.d >> 8].subtickGroups[this.d & 3].delete(this)
 	}
 	explode(colSet){
 		for(let i = 0; i < 15; i++){
