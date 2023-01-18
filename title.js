@@ -185,8 +185,12 @@ const titleNodes = [
 					x &= -16; y &= -16
 				}
 				l--
-				const k = txt.charCodeAt(i++), d = txt.charCodeAt(i++)
-				new Cell(d >> 2, d & 3, x | (k & 15), y | (k >> 4))
+				const k = txt.charCodeAt(i++)
+				let d = txt.charCodeAt(i++), data = 0
+				const a = d >> 6; d &= 63
+				if(a & 1)d |= txt.charCodeAt(i++) << 6
+				if(a & 2)data = txt.charCodeAt(i++) << 24 | txt.charCodeAt(i++) << 16 | txt.charCodeAt(i++) << 8 | txt.charCodeAt(i++)
+				new Cell(d >> 2, d & 3, x | (k & 15), y | (k >> 4), data)
 			}
 			scene = 2
 		}).catch(e => {console.warn(e); err = 'Couldn\'t read clipboard'; title()})

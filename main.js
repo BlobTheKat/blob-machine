@@ -64,24 +64,26 @@ export function render(dt){
 				if(copyFade < 0.7)break a
 				//SAVE
 				const bufs = []
-				let e = new Uint8Array(512)
+				let e = new Uint8Array(7 * 256)
 				for(const [k, ch] of map){
-					let i = 0, j = -1
+					let i = 0, j = -1, count = 0
 					for(const c of ch){
 						j++
 						if(!c)continue
-						e[i++] = j
-						e[i++] = (c.d >> 8 << 2) | (c.d & 3)
+						count++; e[i++] = j
+						e[i++] = (c.data ? 128 : 0) | (c.d >> 6 & 60) | (c.d & 3)
+						if(c.d > 4095) e[i-1] |= 64, e[i++] = c.d >> 12
+						if(c.data) c.data = floor(c.data) | 0, e[i++] = c.data >> 24, e[i++] = c.data >> 16, e[i++] = c.data >> 8, e[i++] = c.data
 					}
 					if(!i)continue
 					const buf = new Uint8Array(i + 6)
 					buf.set(e.subarray(0, i), 6)
 					buf[0] = k >> 16
 					buf[1] = k >> 8
-					buf[2] = k | (i >> 1 & 15)
+					buf[2] = k | (count & 15)
 					buf[3] = k / 1099511627776
 					buf[4] = k / 4294967296
-					buf[5] = k >> 24 | i >> 5
+					buf[5] = k >> 24 | count >> 4
 					bufs.push(buf)
 				}
 				const res = new Uint8Array(bufs.reduce((a,b)=>a+b.length,0))

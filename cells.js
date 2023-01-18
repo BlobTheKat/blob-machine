@@ -75,6 +75,7 @@ const wall = cell({
 cell({
 	name: 'Enemy',
 	push(dir){
+		if(this.data--)return Infinity
 		this.explode(redColors)
 		sound(BREAK)
 		this.pop()
