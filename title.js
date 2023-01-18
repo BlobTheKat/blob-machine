@@ -174,6 +174,7 @@ const titleNodes = [
 	new MenuButton('From Clipboard', -140, () => {
 		if(err)return
 		navigator.clipboard.readText().then(txt => {
+			if(txt.match(/blob[:;,.]/iy))txt = txt.slice(5)
 			txt = atob(txt)
 			let x, y, l = 0
 			reset([])

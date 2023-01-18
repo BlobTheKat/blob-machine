@@ -2,9 +2,9 @@ import { at, tick, Cells, play, Cell, reset, particles, cellset, beatSound, game
 
 const base64abc = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
 // I was lazy, might implement my own later
-function bytesToBase64(bytes) {
-	let result = '', i, l = bytes.length;
-	for (i = 2; i < l; i += 3) {
+function bytesToBase64(bytes, result = '') {
+	let i = 2, l = bytes.length;
+	for (; i < l; i += 3) {
 		result += base64abc[bytes[i - 2] >> 2];
 		result += base64abc[((bytes[i - 2] & 0x03) << 4) | (bytes[i - 1] >> 4)];
 		result += base64abc[((bytes[i - 1] & 0x0F) << 2) | (bytes[i] >> 6)];
@@ -92,7 +92,7 @@ export function render(dt){
 					res.set(buf, i)
 					i += buf.length
 				}
-				navigator.clipboard.writeText(bytesToBase64(res)).then(() => copyFade = 0)
+				navigator.clipboard.writeText(bytesToBase64(res, 'blob:')).then(() => copyFade = 0)
 			}
 		}else{
 			const x = floor((this.mx - this.width/2) * .25 / cam.z / px + cam.x) >> 4
