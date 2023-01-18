@@ -204,10 +204,16 @@ cell({
 	atlas: extensionAtlas,
 
 	tick() {
-		const cell = this.get(this.dir)
-		if(!cell)return
-		if(cell.data < -1)cell.data = -1
-		cell.data++
+		let cell = this.look(FORWARD)
+		if(cell){
+			if(cell.data < -1)cell.data = -1
+			cell.data++
+		}
+		cell = this.look(BACKWARD)
+		if(cell){
+			if(cell.data < 1)cell.data = 1
+			cell.data--
+		}
 	}
 })
 
