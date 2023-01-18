@@ -260,5 +260,5 @@ export function cell(def){
 }
 
 export function texture(path){
-	return VIEW.load(path, gameAssets)
+	return VIEW.loadImage(path, gameAssets)
 }
