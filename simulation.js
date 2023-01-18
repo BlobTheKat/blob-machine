@@ -254,7 +254,7 @@ export const beatSound = VIEW.loadAudio('./beat.mp3', gameAssets)
 export const breakSound = VIEW.loadAudio('./break.mp3', gameAssets)
 
 export function cell(def){
-	const c = {atlas: cellset, tx: 0, ty: 0, update: NONE, tick(){}, push(dir, f){return 0}, name: 'Unnamed', clicked(){}}
+	const c = {atlas: cellset, stx: -1, sty: -1, tx: -1, ty: -1, update: NONE, tick(){}, push(dir, f){return 0}, name: 'Unnamed', clicked(){}}
 	for(const key in c) if(key in def) c[key] = def[key]
 	return Cells.push(c) - 1
 }

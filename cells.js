@@ -66,11 +66,11 @@ cell({
 	tx: 2, ty: 2
 })
 const wall = cell({
-	name: 'Wall',
+	name: 'Immovable',
 	push(dir){
 		return -Infinity
 	},
-	tx: 3, ty: 0
+	stx: 3, sty: 0
 })
 cell({
 	name: 'Enemy',
@@ -152,13 +152,28 @@ cell({
 })
 
 
+const extensionAtlas = texture('./extension.png')
+
+cell({
+	name: 'Crab',
+	atlas: extensionAtlas,
+	stx: 2, sty: 0,
+	tx: 3, ty: 0,
+	update: DIRECTIONAL,
+	tick(){
+		if(this.dir & 1)return
+		this.go(FORWARD)
+	},
+	push(dir){
+		return dir == this.dir ? 1 : (dir ^ 2) == this.dir ? -1 : 0
+	},
+})
 
 /**
  * Credit to Calion#0501 for these cells
  */
 
 const fireworkCols = ['#B3312C','#EB8844','#DECF2A','#41CD34','#6689D3','#253192','#7B2FBE','#D88198']
-const extensionAtlas = texture('./extension.png')
 
 cell({
 	name: 'Firework',

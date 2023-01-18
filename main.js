@@ -160,8 +160,11 @@ export function render(dt){
 				const rot = (((c.d & 3) - (c.d >> 2 & 3) << 30 >> 30) * diff + (c.d >> 2 & 3)) * PI / 2
 				this.save()
 				this.translate((c.x<<4) * diff + (c.lx<<4) * (1 - diff) + 8, (c.y<<4) * diff + (c.ly<<4) * (1-diff) + 8)
+				if(def.stx >= 0 && def.sty >= 0)
+					this.drawImage(def.atlas, def.stx<<4, def.sty<<4, 16, 16, -8, -8, 16, 16)
 				this.rotate(rot)
-				this.drawImage(def.atlas, def.tx<<4, def.ty<<4, 16, 16, -8, -8, 16, 16)
+				if(def.tx >= 0 && def.ty >= 0)
+					this.drawImage(def.atlas, def.tx<<4, def.ty<<4, 16, 16, -8, -8, 16, 16)
 				if(c.data > 0){
 					this.strokeText(c.data, 0, 0, 16)
 					this.fillText(c.data, 0, 0, 16)
@@ -175,9 +178,12 @@ export function render(dt){
 	const y = this.height / px - 64
 	for(const cell of Cells){
 		this.setTransform(px * (i == PEN ? 1 : .8), 0, 0, px * (i == PEN ? 1 : .8), (164 - paletteScroll + 100*i) * px, y * px)
-		this.rotate((dir + rot) * PI / 2)
 		this.globalAlpha = i == PEN ? 1 : .5
-		this.drawImage(cell.atlas, cell.tx<<4, cell.ty<<4, 16, 16, -32, -32, 64, 64)
+		if(cell.stx >= 0 && cell.sty >= 0)
+			this.drawImage(cell.atlas, cell.stx<<4, cell.sty<<4, 16, 16, -32, -32, 64, 64)
+		this.rotate((dir + rot) * PI / 2)
+		if(cell.tx >= 0 && cell.ty >= 0)
+			this.drawImage(cell.atlas, cell.tx<<4, cell.ty<<4, 16, 16, -32, -32, 64, 64)
 		i++
 	}
 	this.globalAlpha = 1
