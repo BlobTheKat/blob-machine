@@ -171,12 +171,12 @@ cell({
 	tick() {
 		this.face(UP)
 		this.go(UP)
-		if (this.data == -6) {
+		if(!this.data)this.data = 6
+		if (--this.data == 0) {
 			this.explode([fireworkCols[random()*fireworkCols.length|0],fireworkCols[random()*fireworkCols.length|0]])
 			sound(BREAK)
 			this.pop()
 		}
-		this.data--
 	}
 })
 
@@ -188,7 +188,8 @@ cell({
 
 	tick() {
 		const cell = this.get(this.dir)
-		if(!cell || cell.data < 1)return
+		if(!cell)return
+		if(cell.data < -1)cell.data = -1
 		cell.data++
 	}
 })
