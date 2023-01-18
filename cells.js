@@ -90,7 +90,7 @@ const trash = cell({
 		sound(BREAK)
 		return Infinity
 	},
-	tx: 3, ty: 2
+	tx: 3, ty: 3
 })
 cell({
 	name: 'Bread',
@@ -210,17 +210,13 @@ cell({
 		cell.data++
 	}
 })
-cell({
-	name: 'Decrement',
-	tx: 0, ty: 1,
-	update: TICK,
-	atlas: extensionAtlas,
 
-	tick() {
-		const cell = this.get(this.dir)
-		if(!cell || cell.data < 1)return
-		cell.data--
-	}
+cell({
+	name: 'One Slide',
+	push(dir){
+		return dir == (this.dir ^ 2) ? 0 : -Infinity
+	},
+	tx: 3, ty: 2
 })
 
 const voidcell = cell({
