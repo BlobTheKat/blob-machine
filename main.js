@@ -160,7 +160,7 @@ export function render(dt){
 				this.translate((c.x<<4) * diff + (c.lx<<4) * (1 - diff) + 8, (c.y<<4) * diff + (c.ly<<4) * (1-diff) + 8)
 				this.rotate(rot)
 				this.drawImage(def.atlas, def.tx<<4, def.ty<<4, 16, 16, -8, -8, 16, 16)
-				if(c.data){
+				if(c.data > 0){
 					this.strokeText(c.data, 0, 0, 16)
 					this.fillText(c.data, 0, 0, 16)
 				}
@@ -175,7 +175,7 @@ export function render(dt){
 		this.setTransform(px * (i == PEN ? 1 : .8), 0, 0, px * (i == PEN ? 1 : .8), (164 - paletteScroll + 100*i) * px, y * px)
 		this.rotate((dir + rot) * PI / 2)
 		this.globalAlpha = i == PEN ? 1 : .5
-		this.drawImage(cellset, cell.tx<<4, cell.ty<<4, 16, 16, -32, -32, 64, 64)
+		this.drawImage(cell.atlas, cell.tx<<4, cell.ty<<4, 16, 16, -32, -32, 64, 64)
 		i++
 	}
 	this.globalAlpha = 1
