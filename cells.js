@@ -149,3 +149,58 @@ cell({
 	},
 	tx: 2, ty: 3
 })
+
+
+
+/**
+ * Credit to Calion#0501 for these cells
+ */
+
+const fireworkCols = ['#B3312C','#EB8844','#DECF2A','#41CD34','#6689D3','#253192','#7B2FBE','#D88198']
+const extensionAtlas = texture('./extension.png')
+
+cell({
+	name: 'Firework',
+	tx: 1, ty: 0,
+	update: TICK,
+	atlas: extensionAtlas,
+	
+	clicked() {
+		this.data++
+	},
+	tick() {
+		this.face(UP)
+		this.go(UP)
+		if (this.data == -6) {
+			this.explode([fireworkCols[random()*fireworkCols.length|0],fireworkCols[random()*fireworkCols.length|0]])
+			sound(BREAK)
+			this.pop()
+		}
+		this.data--
+	}
+})
+
+cell({
+	name: 'Increment',
+	tx: 0, ty: 0,
+	update: TICK,
+	atlas: extensionAtlas,
+
+	tick() {
+		const cell = this.get(this.dir)
+		if(!cell || cell.data < 1)return
+		cell.data++
+	}
+})
+cell({
+	name: 'Decrement',
+	tx: 0, ty: 1,
+	update: TICK,
+	atlas: extensionAtlas,
+
+	tick() {
+		const cell = this.get(this.dir)
+		if(!cell || cell.data < 1)return
+		cell.data--
+	}
+})
