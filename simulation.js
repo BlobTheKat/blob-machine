@@ -173,7 +173,7 @@ export const play = p => playState = playState == 0 ? (lastRender = Date.now() -
 let G
 let originalCells = null
 
-export const faster = () => MSPT = MSPT <= 1 ? 1 : MSPT / 2
+export const faster = () => MSPT = MSPT <= 1/4096 ? 1/4096 : MSPT / 2
 export const slower = () => MSPT = MSPT >= 2048 ? 2048 : MSPT * 2
 
 export function reset(o = originalCells){
@@ -184,28 +184,31 @@ export function reset(o = originalCells){
 	for(const g of subtickGroups)
 		g.clear()
 	noTickGroup.clear()
-	let y, x, d
-	while(y = o.pop(), x = o.pop(), d = o.pop())
-		new Cell(d >> 8, d & 3, x, y)
+	for(let i = 0; i < o.length; i+=3)
+		new Cell(o[i] >> 8, o[i] & 3, o[i+1], o[i+2])
+	o.length = 0
 	originalCells = null
 	playState = 0
 	subtick = 0
 	tickNumber = 0
 }
+
+export function save(){
+	originalCells = []
+	for(const g of subtickGroups)
+		for(const c of g)
+			originalCells.push(c.d | 28, c.x, c.y)
+	for(const c of noTickGroup)
+		originalCells.push(c.d | 28, c.x, c.y)
+}
+
 export let tickNumber = 0
 export function tick(){
 	let diff = min(5000, Date.now() - lastRender) / MSPT
 	if(playState < 2 && diff < 1)return diff
 	if(playState == 0)return min(diff, 1)
 	do{
-		if(!originalCells){
-			originalCells = []
-			for(const g of subtickGroups)
-				for(const c of g)
-					originalCells.push(c.d | 28, c.x, c.y)
-			for(const c of noTickGroup)
-				originalCells.push(c.d | 28, c.x, c.y)
-		}
+		if(!originalCells) save()
 		for(const g of subtickGroups)
 			for(const c of g)
 				c.lx = c.x, c.ly = c.y, c.d = (c.d & -29) | (c.d & 3) << 2
@@ -229,7 +232,7 @@ export function tick(){
 		if(sounds & BREAK)breakSound()
 		sounds = 0
 		lastRender = Date.now()
-		if(tickNumber % 10 == 0){
+		if(tickNumber % 3000/MSPT < 1){ //Every 3s
 			L: for(const [k, v] of map){
 				for(let c of v)if(c)continue L
 				map.delete(k)

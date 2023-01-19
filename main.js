@@ -1,4 +1,4 @@
-import { at, tick, Cells, play, Cell, reset, particles, cellset, beatSound, gameAssets, breakSound, tickNumber, uiset, playState, slower, faster, MSPT, map } from "./simulation.js"
+import { at, tick, Cells, play, Cell, reset, particles, cellset, beatSound, gameAssets, breakSound, tickNumber, uiset, playState, slower, faster, MSPT, map, save, subtickGroups, noTickGroup } from "./simulation.js"
 
 const base64abc = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
 // I was lazy, might implement my own later
@@ -36,7 +36,8 @@ export async function init(){
 }
 let lmx = 0, lmy = 0, lwy = 0
 let dx = 0, dy = 0
-let spaceBarDown = false, specialKeyDown = false, tabDown = false, qDown = false, eDown = false, backspaceDown = false, shiftDown = false, mouseDown = false
+let lastTps = 0, lastTickNumber = 0, tps = 0
+let spaceBarDown = false, specialKeyDown = false, tabDown = false, qDown = false, eDown = false, backspaceDown = false, shiftDown = false, mouseDown = false, mDown = false
 let rot = 0, dir = 0, PEN = 0, PEN2 = -1
 const numberKeys = [KEY_0, KEY_1, KEY_2, KEY_3, KEY_4, KEY_5, KEY_6, KEY_7, KEY_8, KEY_9]
 let paletteScroll = 0, copyFade = 1
@@ -49,6 +50,8 @@ export function render(dt){
 	}
 	if(shiftDown ^ (shiftDown = VIEW.buttons.has(KEY_SHIFT) ^ VIEW.buttons.has(KEY_CAPSLOCK) ^ (+localStorage.controls && VIEW.buttons.has(RBUTTON))))[PEN, PEN2] = [PEN2, PEN]
 	const mouseWasDown = mouseDown
+	const x = floor((this.mx - this.width/2) * .25 / cam.z / px + cam.x) >> 4
+	const y = floor((this.my - this.height/2) * .25 / cam.z / px + cam.y) >> 4
 	a: if(mouseDown = VIEW.buttons.has(LBUTTON) || (+localStorage.controls && VIEW.buttons.has(RBUTTON))){
 		if((this.height - this.my) / px < 112){
 			const p = floor((this.mx / px - 14 + paletteScroll) / 100) - 1
@@ -95,8 +98,6 @@ export function render(dt){
 				navigator.clipboard.writeText(bytesToBase64(res, 'blob:')).then(() => copyFade = 0)
 			}
 		}else{
-			const x = floor((this.mx - this.width/2) * .25 / cam.z / px + cam.x) >> 4
-			const y = floor((this.my - this.height/2) * .25 / cam.z / px + cam.y) >> 4
 			const ch = at(x, y), k = (x & 15) | (y << 4 & 240)
 			const c = ch[k]
 			if(PEN < 0){
@@ -104,6 +105,12 @@ export function render(dt){
 				if(c){
 					breakSound()
 					Cells[c.d >> 8].subtickGroups[c.d & 3].delete(c)
+					let empty = !noTickGroup.size
+					if(empty)for(const g of subtickGroups)if(g.size){empty = false;break}
+					if(empty){
+						cam.x = (cam.x%16+16)%16
+						cam.y = (cam.y%16+16)%16
+					}
 				}
 			}else if(c && (c.d & 3) == dir && (c.d >> 8) == PEN){
 				if(mouseWasDown)break a
@@ -129,6 +136,7 @@ export function render(dt){
 			break
 		}
 	if(!backspaceDown & (backspaceDown = VIEW.buttons.has(KEY_BACKSPACE)))reset()
+	if(!mDown & (mDown = VIEW.buttons.has(KEY_M)))save()
 	if(!qDown & (qDown = VIEW.buttons.has(KEY_Q)))rot = 1, dir = (dir - 1) & 3
 	if(!eDown & (eDown = VIEW.buttons.has(KEY_E)))rot = -1, dir = (dir + 1) & 3
 	if((this.height - this.my) / px < 112){
@@ -175,9 +183,8 @@ export function render(dt){
 	}
 	for(const particle of particles)particle.render(this)
 	let i = 0
-	const y = this.height / px - 64
 	for(const cell of Cells){
-		this.setTransform(px * (i == PEN ? 1 : .8), 0, 0, px * (i == PEN ? 1 : .8), (164 - paletteScroll + 100*i) * px, y * px)
+		this.setTransform(px * (i == PEN ? 1 : .8), 0, 0, px * (i == PEN ? 1 : .8), (164 - paletteScroll + 100*i) * px, this.height - 64 * px)
 		this.globalAlpha = i == PEN ? 1 : .5
 		if(cell.stx >= 0 && cell.sty >= 0)
 			this.drawImage(cell.atlas, cell.stx<<4, cell.sty<<4, 16, 16, -32, -32, 64, 64)
@@ -187,7 +194,7 @@ export function render(dt){
 		i++
 	}
 	this.globalAlpha = 1
-	this.setTransform(px * (PEN == -1 ? 1 : .8), 0, 0, px * (PEN == -1 ? 1 : .8), (64 - paletteScroll) * px, y * px)
+	this.setTransform(px * (PEN == -1 ? 1 : .8), 0, 0, px * (PEN == -1 ? 1 : .8), (64 - paletteScroll) * px, this.height - 64 * px)
 	this.fillStyle = PEN == -1 ? '#0008' : '#0004'
 	this.fillRect(-32, -32, 64, 64)
 	this.globalAlpha = 1
@@ -196,7 +203,7 @@ export function render(dt){
 	this.drawImage(uiset, playState == 0 ? 7 : 14, 0, 7, 7, 94, -150, 36, 36)
 	this.globalAlpha = MSPT >= 2048 ? .5 : 1
 	this.drawImage(uiset, 21, 0, 7, 7, 150, -150, 36, 36)
-	this.globalAlpha = MSPT <= 1 ? .5 : 1
+	this.globalAlpha = MSPT <= 1/4096 ? .5 : 1
 	this.drawImage(uiset, 28, 0, 7, 7, 206, -150, 36, 36)
 	this.globalAlpha = 1
 	this.drawImage(uiset, 35, 0, 7, 7, 262, -150, 36, 36)
@@ -209,7 +216,10 @@ export function render(dt){
 	this.font = '20px Mono'
 	this.fillStyle = '#fff5'
 	this.textAlign = 'left'
-	this.fillText('space = play,  tab = step,  backspace = restart,  shift = break.  Tick: '+tickNumber, 38, -11)
+	if(!lastTps)lastTps = Date.now()
+	else if(Date.now() - lastTps > 1000)lastTps += 1000, tps = max(0, tickNumber - lastTickNumber), lastTickNumber = tickNumber
+	this.fillText('space = play,  tab = step,  backspace = restart,  shift = break.  Tick: '+tickNumber+'.  TPS: '+tps, 38 - paletteScroll, -15)
 	this.fillStyle = '#fffa'
 	this.fillText(PEN == -1 ? '' : Cells[PEN].name, 390, -120)
+	this.fillText(`x: ${x}, y: ${y}`, 10, 15-this.height/px)
 }
