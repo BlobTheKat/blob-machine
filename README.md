@@ -71,6 +71,8 @@ Current cell direction. May be `== UP`, `== DOWN`, `== LEFT` or `== RIGHT`
 
 ---
 ```js
+cell.dir = dir
+//or
 cell.face(dir)
 ```
 Make cell face direction

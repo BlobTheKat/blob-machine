@@ -1,4 +1,4 @@
-import { at, tick, Cells, play, Cell, reset, particles, cellset, beatSound, gameAssets, breakSound, tickNumber, uiset, playState, slower, faster, MSPT, map, save, subtickGroups, noTickGroup } from "./simulation.js"
+import { at, tick, Cells, play, Cell, reset, particles, cellset, beatSound, gameAssets, breakSound, tickNumber, uiset, playState, slower, faster, MSPT, map, save, subtickGroups, noTickGroup, createCell } from "./simulation.js"
 
 const base64abc = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
 // I was lazy, might implement my own later
@@ -117,7 +117,7 @@ export function render(dt){
 				Cells[PEN].clicked.call(c)
 			}else{
 				if(!c || (c.d & 3) != dir || c.d >> 8 != PEN)beatSound()
-				new Cell(PEN, dir, x, y)
+				createCell(PEN, dir, x, y)
 			}
 		}
 	}

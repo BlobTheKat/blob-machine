@@ -19,18 +19,17 @@ export const at = (x, y) => {
 }
 export const particles = new Set
 export class Cell{
-	constructor(kind, d, x, y, data = 0){
-		this.lx = this.x = x
-		this.ly = this.y = y
-		this.d = (d &= 3) | d << 2 | kind << 8 | 16
-		this.data = data
-		const ch = at(x, y), k = (x & 15) | (y << 4 & 240)
-		const c = ch[k]
-		if(c) Cells[c.d >> 8].subtickGroups[c.d & 3].delete(c)
-		ch[k] = this
-		Cells[kind].subtickGroups[d].add(this)
-	}
+	lx = 0; x = 0; ly = 0; y = 0; d = 0; data = 0
 	get dir(){return this.d & 3}
+	set dir(dir){
+		dir &= 3
+		const g = Cells[this.d >> 8].subtickGroups
+		if(g[this.d & 3] != g[dir]){
+			g[this.d & 3].delete(this)
+			g[dir].add(this)
+		}
+		this.d = (this.d & -4) | dir
+	}
 	face(dir){
 		dir &= 3
 		const g = Cells[this.d >> 8].subtickGroups
@@ -124,7 +123,7 @@ export class Cell{
 			if(f == Infinity)return null
 			else if(f == f && !c.move(dir, force + f))return null
 		}
-		const cell = new Cell(d >> 8, d, x, y, data)
+		const cell = createCell(d >> 8, d, x, y, data)
 		cell.lx = this.x
 		cell.ly = this.y
 		cell.d = (cell.d & -29) | (d & 28) | (Cells[d >> 8].subtickGroups[d&3] == G) << 4
@@ -136,6 +135,7 @@ export class Cell{
 		let {x, y} = this
 		if(!Cells[this.d >> 8].subtickGroups[this.d & 3].delete(this))return //Cell already deleted
 		at(x, y)[(x & 15) | (y << 4 & 240)] = null
+		if(cellpool.length < 10e3)cellpool.push(this)
 	}
 	explode(colSet){
 		for(let i = 0; i < 15; i++){
@@ -185,7 +185,7 @@ export function reset(o = originalCells){
 		g.clear()
 	noTickGroup.clear()
 	for(let i = 0; i < o.length; i+=3)
-		new Cell(o[i] >> 8, o[i] & 3, o[i+1], o[i+2])
+		createCell(o[i] >> 8, o[i] & 3, o[i+1], o[i+2])
 	o.length = 0
 	originalCells = null
 	playState = 0
@@ -264,4 +264,18 @@ export function cell(def){
 
 export function texture(path){
 	return VIEW.loadImage(path, gameAssets)
+}
+const cellpool = []
+export function createCell(kind, d, x, y, data = 0){
+	const cell = cellpool.pop() || new Cell
+	cell.lx = cell.x = x
+	cell.ly = cell.y = y
+	cell.d = (d &= 3) | d << 2 | kind << 8 | 16
+	cell.data = data
+	const ch = at(x, y), k = (x & 15) | (y << 4 & 240)
+	const c = ch[k]
+	if(c) Cells[c.d >> 8].subtickGroups[c.d & 3].delete(c)
+	ch[k] = cell
+	Cells[kind].subtickGroups[d].add(cell)
+	return cell
 }
