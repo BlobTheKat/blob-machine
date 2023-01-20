@@ -154,6 +154,7 @@ export class Cell {
 		if (cellpool.length < 10e3) cellpool.push(this)
 	}
 	explode(colSet) {
+		if (MSPT < 16) return
 		for (let i = 0; i < 15; i++) {
 			new Particle(colSet[i % colSet.length], this.x + .5, this.y + .5)
 		}
@@ -246,6 +247,7 @@ export function tick() {
 				c.tick()
 			if (subtick == subtickGroups.length) subtick = 0, tickNumber++
 		}
+		if(MSPT < 64) sounds = 0
 		if (sounds & BEAT) beatSound()
 		if (sounds & BREAK) breakSound()
 		sounds = 0
