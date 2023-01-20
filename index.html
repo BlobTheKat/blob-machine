@@ -8,13 +8,13 @@ exit#-->
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 		<title>&#8203;</title>
 		<style>
-			body{margin:0;background:#000}
-			canvas{
+			body { margin: 0; background: #000; }
+			canvas {
 				position: fixed;
 				transform-origin: bottom left;
 				bottom: 0; left: 0;
 			}
-			#layer{
+			#layer {
 				font-size: 50px; /*No px yet*/
 				position: fixed;
 				top: 0; left: 0;
@@ -268,7 +268,7 @@ exit#-->
 		VIEW.body.addEventListener('mousewheel', e => {
 			e.preventDefault()
 		}, {passive: false})
-		
+
 		VIEW.addEventListener('pointerlockchange', console.log)
 		let px = round(devicePixelRatio)
 		let last = 0

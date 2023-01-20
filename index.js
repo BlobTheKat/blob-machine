@@ -14,5 +14,5 @@ Object.assign(title, TITLE)
 VIEW.add(title)
 VIEW.title = 'Blob Machine'
 VIEW.icon = './icon.png'
-//VIEW.pointer = 'none'
+// VIEW.pointer = 'none'
 globalThis.mods = 0
