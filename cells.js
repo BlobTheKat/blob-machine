@@ -137,7 +137,7 @@ let vstack = 0
 function stick(me, dir, f, l = 3) {
 	if (visited.has(me)) return false
 	visited.add(me)
-	if (me.is(wall)) return false
+	if (me.is(wall) || me.is(voidcell)) return false
 	if (!me.is(sticky)) return me.move(dir, f)
 	const a = l & 1 ? me.get(dir + 1) : null,
 				b = l & 2 ? me.get(dir - 1) : null,

@@ -229,7 +229,7 @@ const titleNodes = [
 	}),
 	//new MenuButton('Options', 70),
 ]
-let ld = false
+let ld = 0
 localStorage.cellpacks = localStorage.cellpacks || './cells.js'
 const packs = localStorage.cellpacks.split('\n')
 export function render(dt) {
@@ -241,23 +241,24 @@ export function render(dt) {
 		this.textAlign = 'center'
 		this.fillStyle = '#fff'
 		this.drawImage(icon, 0, 0, icon.width, icon.height, this.width / 2 - 150 * px, this.height / 2 - 300 * px, 300 * px, 300 * px)
-		this.fillText('Click to start', this.width / 2, this.height / 2 + 50 * px, this.width)
+		this.fillText(ld > 1 ? 'Failed loading some mods.' : 'Click to start', this.width / 2, this.height / 2 + 50 * px, this.width)
 		this.font = 20 * px + 'px Mono, Consolas, Menlo, monospace'
 		this.globalAlpha = 0.4
-		this.fillText(packs.length + ' cell packs loaded', this.width / 2, this.height / 2 + 90 * px, this.width)
+		this.fillText(ld > 1 ? 'Click again to clear all mods' : packs.length + ' cell packs loaded', this.width / 2, this.height / 2 + 90 * px, this.width)
 		this.fillText('Blob machine v1.11', this.width / 2, this.height / 2 + 120 * px, this.width)
 		this.font = 12 * px + 'px Mono, Consolas, Menlo, monospace'
 		this.fillText('clear all modifications', this.width / 2, this.height - 20 * px, this.width)
 		this.font = 15 * px + 'px Mono, Consolas, Menlo, monospace'
 		this.fillText('© 2023 blob.kat@hotmail.com', this.width / 2, this.height - 50 * px, this.width)
-		if (VIEW.buttons.has(0) && !ld) {
-			if (this.my > this.height - 30 * px) {
+		if (!VIEW.buttons.has(0) && ld == 2)ld = 3
+		if (VIEW.buttons.has(0) && ld != 1) {
+			if (this.my > this.height - 30 * px || ld == 3) {
 				localStorage.cellpacks = './cells.js'
 				localStorage.textures = ''
 				location += ''
 				return
 			}
-			ld = true
+			ld = 1
 			;(async () => {
 				for (const pack of packs) await import(pack)
 				for (const d of Cells) {
@@ -271,7 +272,7 @@ export function render(dt) {
 					} else d.subtickGroups = [noTickGroup, noTickGroup, noTickGroup, noTickGroup]
 				}
 				title()
-			})()
+			})().catch(e=>ld=2)
 		}
 		return
 	}

@@ -114,6 +114,8 @@ exit#-->
 			_can.canvas.width = tw
 			_can.canvas.height = th
 			_can.drawImage(this, sx, sy, sw, sh, 0, 0, tw, th)
+			//Workaround for tainted canvases
+			return _can.canvas
 			const img = new Image()
 			img.onload = q.add()
 			_can.canvas.toBlob(blob => img.src = URL.createObjectURL(blob))
