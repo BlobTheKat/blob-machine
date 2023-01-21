@@ -268,7 +268,11 @@ export const BEAT = 1, BREAK = 2
 
 export let gameAssets = new Queue()
 export function texturepack(url, cb = Function.prototype) {
+	const oldcellset = cellset
 	cellset = VIEW.loadImage(localStorage.textures = url || './cellset.png', gameAssets)
+	for(const Cell of Cells){
+		if(Cell.atlas == oldcellset)Cell.atlas = cellset
+	}
 	gameAssets.callback(() => cb('Textures loaded!'), e => (cb('Error loading textures'), setTimeout(texturepack, 20, '')))
 }
 export let cellset = VIEW.loadImage(localStorage.textures || './cellset.png', gameAssets)

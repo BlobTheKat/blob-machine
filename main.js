@@ -1,4 +1,4 @@
-import { at, tick, Cells, play, Cell, reset, particles, cellset, beatSound, gameAssets, breakSound, tickNumber, uiset, playState, slower, faster, MSPT, map, save, subtickGroups, noTickGroup, createCell } from "./simulation.js"
+import { at, tick, Cells, play, reset, particles, cellset, beatSound, gameAssets, breakSound, tickNumber, uiset, playState, slower, faster, MSPT, map, save, subtickGroups, noTickGroup, createCell } from "./simulation.js"
 
 const base64abc = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
 // I was lazy, might implement my own later

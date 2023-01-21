@@ -135,7 +135,7 @@ const titleNodes = [
 		x = 150; fx = .5
 		y = 80; fy = 0
 		s = 0
-		sub = '+ calion'
+		sub = 'very based'
 		render(c, dt) {
 			const { x, y } = this.frame()
 			c.font = '60px Mono, Consolas, Menlo, monospace'
@@ -245,7 +245,7 @@ export function render(dt) {
 		this.font = 20 * px + 'px Mono, Consolas, Menlo, monospace'
 		this.globalAlpha = 0.4
 		this.fillText(ld > 1 ? 'Click again to clear all mods' : packs.length + ' cell packs loaded', this.width / 2, this.height / 2 + 90 * px, this.width)
-		this.fillText('Blob machine v1.11', this.width / 2, this.height / 2 + 120 * px, this.width)
+		this.fillText('Blob machine v1.2', this.width / 2, this.height / 2 + 120 * px, this.width)
 		this.font = 12 * px + 'px Mono, Consolas, Menlo, monospace'
 		this.fillText('clear all modifications', this.width / 2, this.height - 20 * px, this.width)
 		this.font = 15 * px + 'px Mono, Consolas, Menlo, monospace'
