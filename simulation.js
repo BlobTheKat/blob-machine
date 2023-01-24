@@ -203,8 +203,8 @@ export function reset(o = originalCells) {
 	for (const g of subtickGroups)
 		g.clear()
 	noTickGroup.clear()
-	for (let i = 0; i < o.length; i += 3)
-		createCell(o[i] >> 8, o[i] & 3, o[i + 1], o[i + 2])
+	for (let i = 0; i < o.length; i += 4)
+		createCell(o[i] >> 8, o[i] & 3, o[i + 1], o[i + 2], o[i + 3])
 	o.length = 0
 	originalCells = null
 	playState = 0
@@ -216,9 +216,9 @@ export function save() {
 	originalCells = []
 	for (const g of subtickGroups)
 		for (const c of g)
-			originalCells.push(c.d | 28, c.x, c.y)
+			originalCells.push(c.d | 28, c.x, c.y, c.data)
 	for (const c of noTickGroup)
-		originalCells.push(c.d | 28, c.x, c.y)
+		originalCells.push(c.d | 28, c.x, c.y, c.data)
 }
 
 export let tickNumber = 0
