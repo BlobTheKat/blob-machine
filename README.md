@@ -1,5 +1,13 @@
 # Play the game [here](https://blob-machine.pages.dev)
 
+Credit to the original game, Cell Machine (by sam hogan)
+
+Textures credit to https://cellmachine.net
+No, we are not going to include a link to your license.
+No, you cannot claim right to the subticking mechanism.
+Legal concerns can go to `/dev/null` (Or you can email me at noreply@google.com)
+If you have any concerns in general (legal or not), create an issue! That's what they're for!
+
 ## Modding API
 
 Loading custom cells works by loading ES6 modules from the link copied to clipboard
